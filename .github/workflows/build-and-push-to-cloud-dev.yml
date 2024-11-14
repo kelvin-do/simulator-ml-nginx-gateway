@@ -3,6 +3,14 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    branches:
+      - main
+    inputs:
+      aws_account_id:
+        description: 'AWS Account ID'
+        required: false
+        default: '730335269280'
 
 env:
   APP_NAME: MLBACKEND
@@ -16,17 +24,9 @@ jobs:
   build_and_push_image:
     name: 'Build and push image'
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 1
-      fail-fast: true
-      matrix:
-        environment: [dev]
-        include:
-          - environment: dev
-            aws_account_id: "339712965425"
     env:
-      ACCOUNT_NUMBER:  ${{ matrix.aws_account_id }}
-      ROLE_ARN: 'arn:aws:iam::${{ matrix.aws_account_id }}:role/GITHUB_KELVIN_ROLE'
+      ACCOUNT_NUMBER: ${{ github.event.inputs.aws_account_id || '339712965425' }}
+      ROLE_ARN: 'arn:aws:iam::${{ env.ACCOUNT_NUMBER }}:role/GITHUB_KELVIN_ROLE'
 
     steps:
       - name: Checkout code
