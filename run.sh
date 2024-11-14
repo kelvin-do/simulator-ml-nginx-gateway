@@ -24,12 +24,15 @@ do
 
   case "$ENV_VAR_VALUE" in
   *.*)
-    # there is a domain - so do not concatenate with fqdn
-    CMD="sed -i 's/$ENV_VAR_KEY/$(echo "$ENV_VAR_VALUE" | tr "/" "\/")/g' /etc/nginx/routes.conf"
+    # il y a un domaine, donc ne pas concaténer avec fqdn, ajoutez :8000 au besoin
+    CMD="sed -i 's/$ENV_VAR_KEY/$(echo "$ENV_VAR_VALUE" | tr "/" "\/"):8000/g' /etc/nginx/routes.conf"
     ;;
   *)
+    # Utiliser 'dig' pour trouver le port local, sinon 8000 par défaut
     local_port="$(dig +noall +answer +time=3 +tries=1 srv \*._tcp."$ENV_VAR_VALUE"."$fqdn" | awk '{print $7}')"
-    ## TODO check local_port is a valid port number
+    local_port="${local_port:-8000}"  # Définit le port à 8000 si aucune valeur n'est trouvée
+
+    # Insertion dans le fichier de configuration
     CMD="sed -i 's/$ENV_VAR_KEY/$(echo "$ENV_VAR_VALUE" | tr "/" "\/").$fqdn:$local_port/g' /etc/nginx/routes.conf"
     ;;
   esac
