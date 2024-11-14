@@ -7,9 +7,9 @@ RUN apk add bind-tools
 RUN rm -Rf /etc/nginx/conf.d/default.conf /usr/share/nginx/html
 
 # copy custom NGINX configuration files
-COPY nginx.conf.template /etc/nginx/nginx.conf.template
+COPY nginx.conf.template /etc/nginx/nginx.conf
 COPY http-server.conf /etc/nginx/conf.d/http-server.conf
-COPY routes.conf.template /etc/nginx/routes.conf.template
+COPY routes.conf.template /etc/nginx/conf.d/routes.conf
 
 # copy NGINX commands to run
 COPY run.sh /etc/nginx/run.sh

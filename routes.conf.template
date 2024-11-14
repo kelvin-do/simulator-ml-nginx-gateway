@@ -1,7 +1,7 @@
 location ~* ^/v2/(.*)$ {
-    proxy_pass http://$SIMULATOR_API_V2:8000$request_uri;
+    proxy_pass http://$SIMULATOR_API_V2$request_uri;
 }
 
 location ~* ^/v3/(.*)$ {
-    proxy_pass http://$SIMULATOR_API_V3:8000$request_uri;
+    proxy_pass http://$SIMULATOR_API_V3$request_uri;
 }
