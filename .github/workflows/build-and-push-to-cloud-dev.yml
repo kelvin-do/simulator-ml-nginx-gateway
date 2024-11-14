@@ -58,7 +58,7 @@ jobs:
           REGISTRY: ${{steps.ecr-login.outputs.registry}}
           REPOSITORY: simulator-nginx
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:${{env.IMAGE_TAG}} -t $REGISTRY/$REPOSITORY:latest
+          docker build -t $REGISTRY/$REPOSITORY:${{env.IMAGE_TAG}} -t $REGISTRY/$REPOSITORY:latest .
           docker push $REGISTRY/$REPOSITORY:${{env.IMAGE_TAG}}
           docker push $REGISTRY/$REPOSITORY:latest
 
