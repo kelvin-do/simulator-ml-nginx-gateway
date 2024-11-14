@@ -15,6 +15,7 @@ on:
 env:
   APP_NAME: MLBACKEND
   AWS_REGION: eu-west-3
+  ROLE_ARN: "arn:aws:iam::${{ github.event.inputs.aws_account_id || '339712965425' }}:role/GITHUB_KELVIN_ROLE"
 
 permissions:
   id-token: write
@@ -24,14 +25,11 @@ jobs:
   build_and_push_image:
     name: 'Build and push image'
     runs-on: ubuntu-latest
-    env:
-      ACCOUNT_NUMBER: ${{ github.event.inputs.aws_account_id || '339712965425' }}
-      ROLE_ARN: 'arn:aws:iam::${{ env.ACCOUNT_NUMBER }}:role/GITHUB_KELVIN_ROLE'
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+            
       - name: Configure AWS Credentials using OIDC
         id: aws-creds
         uses: aws-actions/configure-aws-credentials@v4
