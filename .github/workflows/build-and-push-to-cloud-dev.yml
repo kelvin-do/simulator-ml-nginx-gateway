@@ -1,0 +1,65 @@
+name: Build and push image to develop
+on:
+  push:
+    branches:
+      - main
+
+env:
+  APP_NAME: MLBACKEND
+  AWS_REGION: eu-west-3
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build_and_push_image:
+    name: 'Build and push image'
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      fail-fast: true
+      matrix:
+        environment: [dev]
+        include:
+          - environment: dev
+            aws_account_id: "339712965425"
+    env:
+      ACCOUNT_NUMBER:  ${{ matrix.aws_account_id }}
+      ROLE_ARN: 'arn:aws:iam::${{ matrix.aws_account_id }}:role/GITHUB_KELVIN_ROLE'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials using OIDC
+        id: aws-creds
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{env.ROLE_ARN}}
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC_${{env.APP_NAME}}
+          aws-region: ${{env.AWS_REGION}}
+
+      - name: Sts GetCallerIdentity
+        run: |
+          aws sts get-caller-identity
+
+      - name: Log in to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Determine image tag
+        id: determine-tag
+        run: |
+          echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
+
+      - name: Build Docker image
+        env:
+          REGISTRY: ${{steps.ecr-login.outputs.registry}}
+          REPOSITORY: simulator-nginx
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:${{env.IMAGE_TAG}} -t $REGISTRY/$REPOSITORY:latest
+          docker push $REGISTRY/$REPOSITORY:${{env.IMAGE_TAG}}
+          docker push $REGISTRY/$REPOSITORY:latest
+
+
