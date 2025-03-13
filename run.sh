@@ -19,8 +19,11 @@ fi
 
 for var in $(env)
 do
-  ENV_VAR_KEY="\$$(echo "$var" | tr "=" " " | awk '{print $1}')"
-  ENV_VAR_VALUE=$(echo "$var" | cut -d= -f2-)
+  # The previous tr function is not compatible when a character or number is used in the alias and in the value of the host
+  # The following command is a quick fix that will work until we have an "=" in the host value which should not happen in an url
+  # in this case we will have to investigate "sed" function
+  ENV_VAR_KEY="\$$(echo "$var" | cut -d= -f1 | awk '{print $1}')"
+  ENV_VAR_VALUE=$(echo "$var" | cut -d= -f2 | awk '{print $1}')
 
   case "$ENV_VAR_VALUE" in
   *.*)
