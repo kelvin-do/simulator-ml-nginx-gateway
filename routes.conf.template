@@ -1,6 +1,3 @@
-location ~* ^/v2/(.*)$ {
-    proxy_pass http://$SIMULATOR_API_V2$request_uri;
-}
 
 location ~* ^/v3/(.*)$ {
     proxy_pass http://$SIMULATOR_API_V3$request_uri;
@@ -8,4 +5,8 @@ location ~* ^/v3/(.*)$ {
 
 location ~* ^/v4/(.*)$ {
     proxy_pass http://$SIMULATOR_API_V4$request_uri;
+}
+
+location ~* ^/v5/(.*)$ {
+    proxy_pass http://$SIMULATOR_API_V5$request_uri;
 }
