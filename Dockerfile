@@ -1,4 +1,5 @@
-FROM nginx:1.21.5-alpine
+# 1.30.7 (stable) fixes NGINX2Root (CVE-2026-123007 and related, 18/11/2026): 1.9.5 to 1.31.8 are vulnerable.
+FROM nginx:1.30.7-alpine
 
 # install dig
 RUN apk add bind-tools
